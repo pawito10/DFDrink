@@ -1,7 +1,14 @@
 import streamlit as st
-import requests
+#import requests
 import time
 import pandas as pd
+
+from app import (
+    predict_sales,
+    build_query,
+    search_rag,
+    generate_explanation
+)
 
 st.title("📊 需要予測AIダッシュボード")
 
@@ -53,12 +60,18 @@ if st.button("🚀 予測する"):
     step.text("📡 Step 2: API通信中（FastAPI）")
     progress.progress(50)
 
-    response = requests.post(
-        "http://127.0.0.1:8000/analyze",
-        json=payload
+    #response = requests.post(
+    #    "http://127.0.0.1:8000/analyze",
+    #    json=payload
+    #)
+    #result = response.json()
+    pred = predict_sales(payload)
+    query = build_query(payload)
+    contexts = search_rag(query)
+    explanation = generate_explanation(
+        pred,
+        contexts
     )
-
-    result = response.json()
 
     step.text("🧠 Step 3: RAG + LLM生成中")
     progress.progress(80)
@@ -74,21 +87,21 @@ if st.button("🚀 予測する"):
     # =========================
 
     st.subheader("📊 予測結果")
-    st.metric("需要予測", f"{result['prediction']:.1f}")
+    st.metric("需要予測", f"{pred:.1f}")
 
     st.subheader("🧠 AIの説明")
-    st.write(result["explanation"])
+    st.write(explanation)
 
     # =========================
     # RAG情報
     # =========================
 
     with st.expander("🔎 RAGクエリ"):
-        st.write(result["query"])
+        st.write(query)
 
     with st.expander("📚 参考情報"):
-        for c in result["contexts"]:
-            st.write("•", c)
+        for c in contexts:
+            st.write("•", c.page_content)
 
     # =========================
     # 履歴表示 + グラフ
