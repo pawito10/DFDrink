@@ -71,13 +71,23 @@ def init_rag():
 
     docs = [Document(page_content=line.strip()) for line in lines]
 
+    print("\n=== RAG Documents ===")
+    print(f"Document数: {len(docs)}")
+
     embedding = OpenAIEmbeddings()
 
-    db = Chroma.from_documents(
+    """db = Chroma.from_documents(
         docs,
         embedding,
         persist_directory="./chroma_db"
+    )"""
+    db = Chroma(
+        persist_directory="./chroma_db",
+        embedding_function=embedding
     )
+
+    print("=== Collection Count ===")
+    print(db._collection.count())
 
     return db
 
@@ -95,6 +105,7 @@ def evaluate_model(model, X_test, y_test):
 
 model = init_model()
 db = init_rag()
+
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
@@ -127,7 +138,24 @@ def predict_sales(data: dict):
 
 
 def search_rag(query: str):
-    return db.similarity_search(query, k=3)
+    print("\n=== Query ===")
+    print(query)
+
+    # 空クエリ対策
+    if not query.strip():
+        print("\n=== Search Results ===")
+        print("クエリが空のため検索をスキップ")
+        return []
+
+    results = db.similarity_search(query, k=2)
+
+    print("\n=== Search Results ===")
+
+    for i, r in enumerate(results):
+        print(f"{i}: {r.page_content}")
+
+    return results
+    
 
 
 def generate_explanation(pred, contexts):
