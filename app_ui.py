@@ -10,7 +10,7 @@ from app import (
     generate_explanation
 )
 
-st.title("📊 需要予測AIダッシュボード")
+st.title("📊 需要予測AIダッシュボード v2")
 
 # =========================
 # 入力UI
