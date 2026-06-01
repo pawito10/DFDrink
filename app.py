@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import csv
 from datetime import datetime
 import numpy as np
+import os
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -26,6 +27,11 @@ from langchain_core.documents import Document
 load_dotenv()
 
 app = FastAPI()
+
+path = "logs.csv"
+
+if not os.path.exists(path):
+    pd.DataFrame(columns=["time", "event", "value"]).to_csv(path, index=False)
 
 
 # =========================
@@ -75,7 +81,7 @@ def init_rag():
     print(f"Document数: {len(docs)}")
 
     embedding = OpenAIEmbeddings()
-    
+
     db = Chroma(
         persist_directory="./chroma_db",
         embedding_function=embedding
