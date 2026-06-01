@@ -68,6 +68,7 @@ if st.button("🚀 予測する"):
     pred = predict_sales(payload)
     query = build_query(payload)
     contexts = search_rag(query)
+    st.write("Context数:", len(contexts))
     explanation = generate_explanation(
         pred,
         contexts

@@ -75,12 +75,7 @@ def init_rag():
     print(f"Document数: {len(docs)}")
 
     embedding = OpenAIEmbeddings()
-
-    """db = Chroma.from_documents(
-        docs,
-        embedding,
-        persist_directory="./chroma_db"
-    )"""
+    
     db = Chroma(
         persist_directory="./chroma_db",
         embedding_function=embedding
@@ -201,8 +196,8 @@ def analyze(input_data: InputData):
     # 履歴保存
     # =========================
 
-    import csv
-    from datetime import datetime
+    #import csv
+    #from datetime import datetime
 
     log_data = [
         datetime.now().isoformat(),
